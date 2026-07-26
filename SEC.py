@@ -2,6 +2,15 @@ import requests
 import re
 import pandas as pd
 from bs4 import BeautifulSoup
+import anthropic
+from prompts import BUSINESS_PROMPT, RISKS_PROMMPT, MDA_PROMPT
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = anthropic.Anthropic()
+
+TENK_MODEL = "claude-opus-4-6"
 
 headers = {'User-Agent': 'TJ research-tool btpx2025@mymail.pomona.edu'}
 
@@ -58,11 +67,9 @@ for index, row in groupedforms.iterrows():
                                headers=headers)
 
     documents[row['form']] = htmlPerForm.text
-# print(documents.keys())
 
 
-#print(documents['10-K'][:4000])
-
+#Starting the 10K extraction here
 soup = BeautifulSoup(documents['10-K'], "html.parser")
 
 pattern = re.compile("display:none")
@@ -103,7 +110,42 @@ def extract_section(text, start_anchor, end_anchor, search_from):
 risks, risks_end = extract_section(loweredsoup, "item 1a", "item 1b", item1End)
 mda, mda_end = extract_section(loweredsoup, "item 7", "item 7a", risks_end)
 
-print(business, risks, mda)
 
 #This is where we use our Claude API & prompts to summarize
+def summarize_10k(text, prompt):
+    response = client.messages.create(
+        model = TENK_MODEL,
+        max_tokens = 2000,
+        temperature = 0.1,
+        system = prompt,
+        messages=[{"role":"user", "content": text}]
+    )
+    return response.content[0].text
 
+business_summary = summarize_10k(business, BUSINESS_PROMPT)
+risks_summary = summarize_10k(risks, RISKS_PROMMPT)
+mda_summary = summarize_10k(mda, MDA_PROMPT)
+
+print(business_summary, risks_summary, mda_summary)
+
+
+#Don't forget to also do this for the 8K and Def 14A
+
+
+
+
+
+
+
+
+
+
+#Cost: $10.03 - $9.89 = $0.14
+#damn in like a minute, ts was FAST
+#make sure to test with other companies
+#make sure to check the numbers across their sources (just plug and chug into Claude)
+
+#use yfinance to not only find financial data but also the chief officers --> might need to an authority check with the 14A though
+
+
+#no, we can use the quick facts info thing the sec has, the other type of request
