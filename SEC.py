@@ -11,8 +11,6 @@ companyTickers = requests.get(
 )
 
 # asking user input for ticker --> change ticker to lowercase
-
-
 def ticker_to_cik(companyTickers):
     dictionary = {}
     companyTickers = companyTickers.text.split("\n")
@@ -78,24 +76,34 @@ readablesoup = soup.get_text()
 
 loweredsoup = readablesoup.lower()
 
-current = loweredsoup.find("item 1")
+item1Start = loweredsoup.find("item 1")
 item1cut = -1
 count = 0
 
-while current != -1:
-    if "business" in loweredsoup[current:current+30]:
+while item1Start != -1:
+    if "business" in loweredsoup[item1Start:item1Start+30]:
         count = count + 1
         if count == 2:
-            item1cut = current
+            item1cut = item1Start
             break
-    current = loweredsoup.find("item 1", current +1)
+    item1Start = loweredsoup.find("item 1", item1Start +1)
 
-#print(readablesoup[item1cut:item1cut+1000])
+item1End = loweredsoup.find("item 1a", item1cut)
 
-tenkEnd = loweredsoup.find("item 1a", item1cut)
+business = readablesoup[item1cut:item1End]
 
-print(readablesoup[item1cut:tenkEnd])
 
-#xbrl = soup.find_all('ix:',string)
+def extract_section(text, start_anchor, end_anchor, search_from):
+    start_position = text.find(start_anchor, search_from)
+    end_position = text.find(end_anchor, start_position)
+    return text[start_position:end_position], end_position
 
-#soupwithoutxbrl = soup.decompose(xbrl)
+
+#Two things on the lefthand side b/c we return two different things, both the text and ending position
+risks, risks_end = extract_section(loweredsoup, "item 1a", "item 1b", item1End)
+mda, mda_end = extract_section(loweredsoup, "item 7", "item 7a", risks_end)
+
+print(business, risks, mda)
+
+#This is where we use our Claude API & prompts to summarize
+
