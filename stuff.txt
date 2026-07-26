@@ -1,0 +1,54 @@
+
+
+
+
+
+readablesoup = soup.get_text()
+
+loweredsoup = readablesoup.lower()
+
+current = loweredsoup.find("item 1", 20000)
+item1cut = -1
+
+print(readablesoup[current:current+10000])
+
+while current != -1:
+    if "business" in loweredsoup[current:current+30]:
+        item1cut = current
+        break
+    else:
+        current = loweredsoup.find("item 1", current + 1) 
+
+
+print(readablesoup[item1cut:item1cut+1000])
+
+#firstposition = loweredsoup.find("item 1")
+
+
+#realposition = loweredsoup.find("item 1 business", firstposition + 1)
+
+# realrealposition = loweredsoup.find("item 1 business", realposition + 1)
+
+# finalposition = loweredsoup.find("item 1 business", realrealposition + 1)
+
+
+
+
+# unpadded_cik = int(cik)
+# accession = accessionNumber.strip("-")
+# primarydocument = primaryDocument
+
+
+# firstEntry = companyTickers.json()['0']
+
+# directCik = companyTickers.json()['0']['cik_str']
+
+# companyData = pd.DataFrame.from_dict(companyTickers.json(),
+# orient='index')
+
+# companyData['cik_str'] = companyData['cik_str'].astype(str).str.zfill(10)
+
+# cik = companyData['cik_str'].iloc[0]
+
+
+# allFilings = pd.DataFrame.from_dict(Metadata.json()['filings']['recent'])

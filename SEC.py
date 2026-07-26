@@ -1,5 +1,7 @@
 import requests
+import re
 import pandas as pd
+from bs4 import BeautifulSoup
 
 headers = {'User-Agent': 'TJ research-tool btpx2025@mymail.pomona.edu'}
 
@@ -8,7 +10,8 @@ companyTickers = requests.get(
     headers=headers
 )
 
-#asking user input for ticker --> change ticker to lowercase
+# asking user input for ticker --> change ticker to lowercase
+
 
 def ticker_to_cik(companyTickers):
     dictionary = {}
@@ -38,45 +41,61 @@ Metadata = requests.get(f'https://data.sec.gov/submissions/CIK{cik}.json',
 
 allFilings = pd.DataFrame.from_dict(Metadata.json()['filings']['recent'])
 
-filteredforms = allFilings[allFilings['form'].isin(["10-K", "10-Q", "DEF 14A"])]
+filteredforms = allFilings[allFilings['form'].isin(
+    ["10-K", "10-Q", "DEF 14A"])]
 
-detailedfilteredforms = filteredforms[['filingDate', 'accessionNumber', 'primaryDocument', 'form']]
+detailedfilteredforms = filteredforms[[
+    'filingDate', 'accessionNumber', 'primaryDocument', 'form']]
 
 groupedforms = detailedfilteredforms.groupby('form').head(1)
 
 unpadded_cik = int(cik)
 
+documents = {}
+
 for index, row in groupedforms.iterrows():
-    accession = row['accessionNumber'].replace("-","")
+    accession = row['accessionNumber'].replace("-", "")
     primaryDocument = row['primaryDocument']
     htmlPerForm = requests.get(f"https://www.sec.gov/Archives/edgar/data/{unpadded_cik}/{accession}/{primaryDocument}",
                                headers=headers)
-    print(htmlPerForm.status_code)
+
+    documents[row['form']] = htmlPerForm.text
+# print(documents.keys())
 
 
+#print(documents['10-K'][:4000])
 
+soup = BeautifulSoup(documents['10-K'], "html.parser")
 
+pattern = re.compile("display:none")
 
+xbrl = soup.find_all("div", style=pattern)
 
+for element in xbrl:
+    element.decompose()
 
-#unpadded_cik = int(cik)
-#accession = accessionNumber.strip("-")
-#primarydocument = primaryDocument
+readablesoup = soup.get_text()
 
+loweredsoup = readablesoup.lower()
 
+current = loweredsoup.find("item 1")
+item1cut = -1
+count = 0
 
-#firstEntry = companyTickers.json()['0']
+while current != -1:
+    if "business" in loweredsoup[current:current+30]:
+        count = count + 1
+        if count == 2:
+            item1cut = current
+            break
+    current = loweredsoup.find("item 1", current +1)
 
-#directCik = companyTickers.json()['0']['cik_str']
+#print(readablesoup[item1cut:item1cut+1000])
 
-#companyData = pd.DataFrame.from_dict(companyTickers.json(),
-                                     #orient='index')
+tenkEnd = loweredsoup.find("item 1a", item1cut)
 
-#companyData['cik_str'] = companyData['cik_str'].astype(str).str.zfill(10)
+print(readablesoup[item1cut:tenkEnd])
 
-#cik = companyData['cik_str'].iloc[0]
+#xbrl = soup.find_all('ix:',string)
 
-
-
-#allFilings = pd.DataFrame.from_dict(Metadata.json()['filings']['recent'])
-
+#soupwithoutxbrl = soup.decompose(xbrl)
