@@ -49,7 +49,7 @@ Metadata = requests.get(f'https://data.sec.gov/submissions/CIK{cik}.json',
 allFilings = pd.DataFrame.from_dict(Metadata.json()['filings']['recent'])
 
 filteredforms = allFilings[allFilings['form'].isin(
-    ["10-K", "10-Q", "DEF 14A"])]
+    ["10-K", "8-K", "DEF 14A"])]
 
 detailedfilteredforms = filteredforms[[
     'filingDate', 'accessionNumber', 'primaryDocument', 'form']]
@@ -129,7 +129,13 @@ mda_summary = summarize_10k(mda, MDA_PROMPT)
 print(business_summary, risks_summary, mda_summary)
 
 
-#Don't forget to also do this for the 8K and Def 14A
+#Starting 8-K extraction here
+
+
+
+
+
+#Don't forget to also do this for the 8K - for the current events stuff
 
 
 
