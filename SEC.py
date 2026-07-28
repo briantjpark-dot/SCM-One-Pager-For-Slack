@@ -182,33 +182,3 @@ def run_sec_pipeline(ticker):
     filteredforms = filter_recent_8ks(allFilings)
     eightk_summary = get_8k_events(filteredforms)
     return {"business": business_summary, "risks": risks_summary, "mda": mda_summary, "events": eightk_summary}
-
-
-
-
-
-
-
-
-#So now we have to remove all the codes that are not prioritized (deleted) and then use a dictionary to map each code to a string
-
-#split its codes → look each up in the dictionary → keep the labels that exist → join them into a readable string.
-
-
-
-#Cost: $10.03 - $9.89 = $0.14
-#damn in like a minute, ts was FAST
-#make sure to test with other companies
-#make sure to check the numbers across their sources (just plug and chug into Claude)
-
-#use yfinance to not only find financial data but also the chief officers --> might need to an authority check with the 14A though
-
-
-#cik = ticker_to_cik(ticker, cik_map) --> for inside the orchestrator
-
-#operator also does clean_html(documents["10-K"])
-
-#business_summary = summarize_10k(business, BUSINESS_PROMPT)
-#risks_summary = summarize_10k(risks, RISKS_PROMMPT)
-#mda_summary = summarize_10k(mda, MDA_PROMPT)
-
