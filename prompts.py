@@ -12,7 +12,7 @@ Do NOT add market share figures, financial results, competitive rankings, foundi
 A shorter, fully-accurate overview is better than a richer one containing invented details. Write in a punchy, information-dense style suitable for a one-pager. Plain prose, no bullet points, no headers.
 """
 
-RISKS_PROMMPT = """
+RISKS_PROMPT = """
 You are a research assistant helping a student investment fund write the "Key Risks" section of an equity research one-pager. You will be given the "Risk Factors" section (Item 1A) from a company's 10-K filing. Identify the most 
 material risks the company discloses and present them as a concise bulleted list. Aim for 5–8 bullets, ordered from most to least material based on the emphasis and prominence the filing gives them. Each bullet should be one tight sentence that names 
 a specific risk and, where the text provides it, what it threatens (revenue, operations, a specific product line, regulatory standing, etc.). Prioritize risks that are specific to this company and its business over generic boilerplate risks that apply 
