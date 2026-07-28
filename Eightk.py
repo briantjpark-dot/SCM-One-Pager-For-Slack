@@ -71,4 +71,39 @@ priority_group = filteredforms[[
 
 #So now we have to remove all the codes that are not prioritized (deleted) and then use a dictionary to map each code to a string
 
+code_dictionary = {
+    "1.01": "Material Agreement Entered",
+    "1.02": "Material Agreement Terminated",
+    "1.03": "Bankruptcy or Receivership",
+    "2.01": "Completion of Acquisition or Disposition",
+    "2.02": "Earnings / Results of Operations",
+    "2.03": "New Material Financial Obligation",
+    "2.04": "Debt Acceleration or Trigger Event",
+    "2.05": "Costs from Exit or Disposal Activities",
+    "2.06": "Material Asset Impairment",
+    "3.01": "Delisting or Listing Standard Notice",
+    "3.02": "Unregistered Equity Sale",
+    "3.03": "Material Modification to Shareholder Rights",
+    "4.01": "Change in Auditor",
+    "4.02": "Non-Reliance on Prior Financials",
+    "5.01": "Change in Control",
+    "5.02": "Executive / Director Change",
+    "5.03": "Change to Bylaws or Fiscal Year",
+    "7.01": "Regulation FD Disclosure",
+    "8.01": "Other Material Event",
+}
 
+#split its codes → look each up in the dictionary → keep the labels that exist → join them into a readable string.
+
+priority_group["items"] = priority_group['items'].astype(str).str.split(",")
+
+def codes_to_labels(codes):
+    labels = []
+    for code in codes:
+        if code in code_dictionary.keys():
+            labels.append(code_dictionary[code])
+    return ", ".join(labels)
+
+priority_group["items"] = priority_group["items"].apply(codes_to_labels)
+
+print(priority_group)
