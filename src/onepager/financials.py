@@ -40,9 +40,16 @@ def get_financials(ticker):
 
 #keyword and officer are loop variables, bit confusing
 def priority_management(officer_list):
+    if not officer_list:
+        return []
+
     roster = []
     for officer in officer_list:
         title = officer.get('title', '').lower()
         if any(keyword in title for keyword in key_titles):
             roster.append({"name": officer.get('name'), "title": officer.get('title')})
     return roster
+
+
+
+#future iteration but what if in slack you can do something like commanding looking into fuller financials or different financial metrics/multiples?

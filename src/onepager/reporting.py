@@ -1,5 +1,5 @@
-from sec import run_sec_pipeline
-from financials import get_financials, priority_management
+from onepager.sec import run_sec_pipeline
+from onepager.financials import get_financials, priority_management
 from dotenv import load_dotenv
 from fpdf import FPDF
 
@@ -126,58 +126,6 @@ def generate_report(bundle):
 
 # Since slack uses a different markdown format I created a duplicate function
 # that does the same as generate_report but in a slack-cooperative format
-#def generate_slack_report(bundle):
-    sec = bundle["SEC Data"]
-    finances = bundle["Financials and Management"]
-
-    business = sec["business"]
-    risks = sec["risks"]
-    mda = sec["mda"]
-    events = format_eightk_events(sec["events"])
-
-    revenue = format_financial_numbers(finances["Revenue"])
-    sharePrice = format_financial_numbers(finances["Share Price"])
-    marketCap = format_financial_numbers(finances["Market Cap"])
-    ev = format_financial_numbers(finances["EV"])
-    evEBITDA = format_multiples(finances["EV to EBITDA"])
-    revGrowth = format_rev_growth(finances["Rev. Growth"])
-    management = format_management(finances["Management"])
-
-    # Build the financials block text (Slack mrkdwn: *bold*, \n for newlines)
-    financials_text = (
-        f"*Share Price:* {sharePrice}\n"
-        f"*Market Cap:* {marketCap}\n"
-        f"*Enterprise Value:* {ev}\n"
-        f"*EV / EBITDA:* {evEBITDA}\n"
-        f"*Revenue (FY):* {revenue}\n"
-        f"*Revenue Growth (YoY):* {revGrowth}"
-    )
-
-    # management and events are lists of strings; join them with newlines
-    management_text = "\n".join(management)
-    events_text = "\n".join(events)
-
-    blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": "Business Overview"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": business}},
-
-        {"type": "header", "text": {"type": "plain_text", "text": "Key Financials"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": financials_text}},
-
-        {"type": "header", "text": {"type": "plain_text", "text": "Key Risks"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": risks}},
-
-        {"type": "header", "text": {"type": "plain_text", "text": "MD&A"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": mda}},
-
-        {"type": "header", "text": {"type": "plain_text", "text": "Management"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": management_text}},
-
-        {"type": "header", "text": {"type": "plain_text", "text": "Recent Events"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": events_text}},
-    ]
-
-    return blocks
 
 def generate_pdf_report(bundle):
     sec = bundle["SEC Data"]

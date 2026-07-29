@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from reporting import run_pipeline, generate_pdf_report
+from onepager.reporting import run_pipeline, generate_pdf_report
 
 load_dotenv()
 
@@ -11,7 +11,7 @@ app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
 
 # the following commands are necessary:
-# 1. "/invite @OnePagerBot"
+# 1. "/invite @Name of your bot"
 # 2. /onepager TICKER HERE
 
 @app.command("/onepager")
@@ -41,3 +41,4 @@ def handle_onepager(ack, command, client):
 if __name__ == "__main__":
     handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     handler.start()
+

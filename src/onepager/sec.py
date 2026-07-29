@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from bs4 import BeautifulSoup
 import anthropic
-from prompts import BUSINESS_PROMPT, RISKS_PROMPT, MDA_PROMPT
+from onepager.prompts import BUSINESS_PROMPT, RISKS_PROMPT, MDA_PROMPT
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
@@ -40,12 +40,13 @@ code_dictionary = {
 
 # asking user input for ticker --> change ticker to lowercase
 def build_cik_map():
-    companyTickers = requests.get(
+    response = requests.get(
     "https://www.sec.gov/include/ticker.txt",
     headers=headers
     )
+    response.raise_for_status()
     dictionary = {}
-    companyTickers = companyTickers.text.split("\n")
+    companyTickers = response.text.split("\n")
 
     for row in companyTickers:
         if row == "":
@@ -68,6 +69,7 @@ def get_submission(cik):
         f'https://data.sec.gov/submissions/CIK{cik}.json',
         headers=headers
         )
+    Metadata.raise_for_status()
     allFilings = pd.DataFrame.from_dict(Metadata.json()['filings']['recent'])
     Metadata_json = Metadata.json()
     return Metadata_json, allFilings
@@ -80,6 +82,8 @@ def select_recent_filings(allFilings, cik):
     detailedfilteredforms = filteredforms[[
     'filingDate', 'accessionNumber', 'primaryDocument', 'form']]
     groupedforms = detailedfilteredforms.groupby('form').head(1)
+    if groupedforms.empty:
+        raise ValueError("No 10-K filing found for this company")
     unpadded_cik = int(cik)
     for index, row in groupedforms.iterrows():
         accession = row['accessionNumber'].replace("-", "")
@@ -88,6 +92,7 @@ def select_recent_filings(allFilings, cik):
             f"https://www.sec.gov/Archives/edgar/data/{unpadded_cik}/{accession}/{primaryDocument}",
             headers=headers
             )
+        htmlPerForm.raise_for_status()
         documents[row['form']] = htmlPerForm.text
     return documents
 
@@ -104,7 +109,11 @@ def clean_html(raw_html):
 
 def extract_section(lowered, original, start_anchor, end_anchor, search_from):
     start_position = lowered.find(start_anchor, search_from)
+    if start_position == -1:
+        raise ValueError(f"Could not locate '{start_anchor}' in filing")
     end_position = lowered.find(end_anchor, start_position)
+    if end_position == -1:
+        raise ValueError(f"Could not locate '{end_anchor}' in filing")
     return original[start_position:end_position], end_position
 
 def section_10k(loweredsoup, readablesoup):
@@ -119,7 +128,12 @@ def section_10k(loweredsoup, readablesoup):
                 break
         item1Start = loweredsoup.find("item 1", item1Start +1)
 
+    if item1cut == -1:
+        raise ValueError("Could not locate the Item 1 (Business) section in filing")
+
     item1End = loweredsoup.find("item 1a", item1cut)
+    if item1End == -1:
+        raise ValueError("Could not locate the Item 1A (Risk Factors) section in filing")
     business = readablesoup[item1cut:item1End]
 
     risks, risks_end = extract_section(loweredsoup, readablesoup, "item 1a", "item 1b", item1End)
