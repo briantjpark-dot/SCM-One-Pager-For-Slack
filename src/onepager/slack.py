@@ -11,7 +11,7 @@ app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
 
 # the following commands are necessary:
-# 1. "/invite @Name of your bot"
+# 1. "/invite @OnePagerBot"
 # 2. /onepager TICKER HERE
 
 @app.command("/onepager")
