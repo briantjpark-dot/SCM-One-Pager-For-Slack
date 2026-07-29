@@ -1,8 +1,9 @@
+import io
 import os
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from reporting import run_pipeline, generate_slack_report
+from reporting import run_pipeline, generate_pdf_report
 
 load_dotenv()
 
@@ -26,12 +27,14 @@ def handle_onepager(ack, command, client):
         text=f"Generating one-pager for {ticker.upper()}..."
     )
     bundle = run_pipeline(ticker)
-    blocks = generate_slack_report(bundle)
+    report = generate_pdf_report(bundle)
+    pdf_bytes = report.encode("latin-1")
 
-    client.chat_postMessage(
+    client.files_upload_v2(
         channel=channel_id,
-        text=f"{ticker.upper()} One-Pager",
-        blocks=blocks
+        filename=f"{ticker.upper()}_onepager.pdf",
+        file=io.BytesIO(pdf_bytes),
+        initial_comment=f"{ticker.upper()} One-Pager"
     )
 
 
