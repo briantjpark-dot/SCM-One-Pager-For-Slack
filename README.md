@@ -55,6 +55,6 @@ Then proceed to the Slack Workspace you chose during setup and in your desired c
 
 To then use the bot, simply enter "/onepager TICKER" where you replace "TICKER" with whatever ticker you would like.
 
-##Future iterations
+## Future iterations
 
 I plan to keep working on this further with more integrated commands. For example, instead of having the finances be hardcoded, I'm thinking of exploring commands to provide followup financial metrics on command/request.
