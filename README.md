@@ -42,6 +42,7 @@ You will also need an Anthropic API Key as well as the Slack Bot Token and a Sla
 ANTHROPIC_API_KEY=Your key here
 SLACK_BOT_TOKEN=Your key here
 SLACK_APP_TOKEN=Your key here
+SEC_USER_AGENT = YourName your.email@example.com
 ```
 
 You will also need setup a new app for your desired Slack workspace by yourself. I found this [Youtube Video](https://www.youtube.com/watch?v=KJ5bFv-IRFM&t=586s) by Tech with Tim to be the most helpful for setting up. Here are some key points:

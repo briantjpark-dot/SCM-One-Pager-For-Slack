@@ -1,4 +1,5 @@
 import requests
+import os
 import re
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -13,7 +14,7 @@ client = anthropic.Anthropic()
 
 TENK_MODEL = "claude-opus-4-6"
 
-headers = {'User-Agent': 'TJ research-tool btpx2025@mymail.pomona.edu'}
+headers = {'User-Agent': os.environ["SEC_USER_AGENT"]}
 
 code_dictionary = {
     "1.01": "Material Agreement Entered",
