@@ -33,9 +33,9 @@ Once a user calls the bot via the command /onepager TICKER, the bot will:
 You will need an Anthropic API Key as well as the Slack Bot Token and a Slack App Token. Please create a .env file and paste
 
 ```
-ANTHROPIC_API_KEY= You're key here
-SLACK_BOT_TOKEN = You're key here
-SLACK_APP_TOKEN = You're key here
+ANTHROPIC_API_KEY= Your key here
+SLACK_BOT_TOKEN = Your key here
+SLACK_APP_TOKEN = Your key here
 ```
 
 You will also need setup a new app for your desired Slack workspace by yourself. I found this [Youtube Video](https://www.youtube.com/watch?v=KJ5bFv-IRFM&t=586s) by Tech with Tim to be the most helpful for setting up. Here are some key points:
