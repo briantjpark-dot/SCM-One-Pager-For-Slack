@@ -32,7 +32,7 @@ Once a user calls the bot via the command /onepager TICKER, the bot will:
 
 Copy the code through
 ```
-pip install -e .
+pip install -e
 ```
 
 You will also need an Anthropic API Key as well as the Slack Bot Token and a Slack App Token. Please create a .env file and paste
