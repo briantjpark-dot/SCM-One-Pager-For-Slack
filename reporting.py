@@ -15,22 +15,43 @@ def format_eightk_events(events_df):
         events.append(bullet)
     return events
 
-def normalize_financial_numbers(number):
+def format_management(roster):
+     entries = []
+     if roster is None or len(roster) == 0:
+          return "--"
+     for officer in roster:
+          name = officer.get("name")
+          title = officer.get("title")
+          entry = f"{name}: {title}"
+          entries.append(entry)
+     return entries
+
+def format_financial_numbers(number):
+     if number is None:
+          return "--"
      abs_number = abs(number)
-
+     sign = "-" if number < 0 else ""
      if abs_number >= 1_000_000_000_000:
-          return f"${abs_number / 1_000_000_000_000:.2f}T"
+          return sign + f"${abs_number / 1_000_000_000_000:.2f}T"
      elif abs_number >= 1_000_000_000:
-          return f"${abs_number / 1_000_000_000:.2f}B"
+          return sign + f"${abs_number / 1_000_000_000:.2f}B"
      elif abs_number >= 1_000_000:
-          return f"${abs_number / 1_000_000:.2f}M"
+          return sign + f"${abs_number / 1_000_000:.2f}M"
      elif abs_number >= 1_000:
-          return f"${abs_number / 1_000:.2f}K"   
+          return sign + f"${abs_number / 1_000:.2f}K"   
      else:
-          return f"${abs_number:.2f}"  
+          return sign + f"${abs_number:.2f}"  
 
-#make sure for rev growth you just stick percent at the end
+def format_rev_growth(growth):
+     if growth is None:
+          return "--"
+     growth = growth*100
+     return f"{growth:.2f}%"
 
+def format_multiples(multiple):
+     if multiple is None:
+          return "--"
+     return f"{multiple:.2f}"
 
 def run_pipeline(ticker):
     sec_data = run_sec_pipeline(ticker)
@@ -38,7 +59,66 @@ def run_pipeline(ticker):
     financials_and_management["Management"] = priority_management(financials_and_management["Management"])
     return {"SEC Data": sec_data, "Financials and Management": financials_and_management}
 
+def generate_report(bundle):
+     sec = bundle["SEC Data"]
+     finances = bundle["Financials and Management"]
+
+     business = sec["business"]
+     risks = sec["risks"]
+     mda = sec["mda"]
+     events = format_eightk_events(sec["events"])
+
+     management = format_management(finances["Management"])
+     revenue = format_financial_numbers(finances["Revenue"])
+     sharePrice = format_financial_numbers(finances["Share Price"])
+     marketCap = format_financial_numbers(finances["Market Cap"])
+     ev = format_financial_numbers(finances["EV"])
+     evEBITDA = format_multiples(finances["EV to EBITDA"])
+     revGrowth = format_rev_growth(finances["Rev. Growth"])
+
+#going from formatted data to an md file
+     lines = []
+     lines.append("## Business Overview")
+     lines.append("")
+     lines.append(business)
+     lines.append("")
+
+     lines.append("## Key Financials")
+     lines.append("")
+     lines.append(f"**Share Price:** {sharePrice}")
+     lines.append(f"**Market Cap:** {marketCap}")
+     lines.append(f"**Enterprise Value:** {ev}")
+     lines.append(f"**EV / EBITDA:** {evEBITDA}")
+     lines.append(f"**Revenue (FY):** {revenue}")
+     lines.append(f"**Revenue Growth (YoY):** {revGrowth}")
+     lines.append("")
+
+     lines.append("## Key Risks")
+     lines.append("")
+     lines.append(risks)
+     lines.append("")
+
+     lines.append("## Management's Discussion & Analysis")
+     lines.append("")
+     lines.append(mda)
+     lines.append("")
+
+     lines.append("## Management")
+     lines.append("")
+     lines.extend(management)
+     lines.append("")
+
+     lines.append("## Recent Events")
+     lines.append("")
+     lines.extend(events)
+
+     report = "\n".join(lines)
+     return report
+
+
+
 if __name__ == "__main__":
     ticker = input("Please enter a ticker:")
-    result = run_pipeline(ticker)
-    print(result)
+    bundle = run_pipeline(ticker)
+    report = generate_report(bundle)
+    print(report)

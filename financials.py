@@ -5,9 +5,13 @@ key_titles = (
     "chief financial",
     "chief operating",
     "chief technology",
-    "chairman"
-    "founder"
-    "cofounder"
+    "chairman",
+    "founder",
+    "cofounder",
+    "ceo",
+    "cto",
+    "cfo",
+    "coo"
 )
 
 def get_financials(ticker):
@@ -28,7 +32,8 @@ def get_financials(ticker):
         recent_fy_revenue = None
     else:
         recent_fy_revenue = income_statement.loc["Total Revenue"].iloc[0]
-    return financials, recent_fy_revenue
+    financials["Revenue"] = recent_fy_revenue
+    return financials
 
 #management also comes back as a list of dictionaries, so just take the top 4
 #yfinance separately offers a longBusinessSummary so if extraction fails on the 10K, we should use this as a backup --> We can even limit any api costs if we only use yFinance as well
