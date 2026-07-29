@@ -126,7 +126,7 @@ def generate_report(bundle):
 
 # Since slack uses a different markdown format I created a duplicate function
 # that does the same as generate_report but in a slack-cooperative format
-def generate_slack_report(bundle):
+#def generate_slack_report(bundle):
     sec = bundle["SEC Data"]
     finances = bundle["Financials and Management"]
 
@@ -178,7 +178,6 @@ def generate_slack_report(bundle):
     ]
 
     return blocks
-
 
 def generate_pdf_report(bundle):
     sec = bundle["SEC Data"]
@@ -265,8 +264,6 @@ def generate_pdf_report(bundle):
 
     report = pdf.output(dest="S")
     return report
-
-
 
 if __name__ == "__main__":
     ticker = input("Please enter a ticker:")
